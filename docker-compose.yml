@@ -1,0 +1,61 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: imbee-test-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h localhost']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - '${RABBITMQ_PORT}:5672'
+      - '${RABBITMQ_MANAGEMENT_PORT}:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+      TZ: ${TZ}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: imbee-test-nestjs
+    # command: sh -c "pnpm migration:run && pnpm start:dev"
+    command: sh -c "pnpm start:dev"
+    env_file:
+      - ./.env
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  rabbitmq_data:
