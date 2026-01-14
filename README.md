@@ -2,9 +2,22 @@
 
 A NestJS microservice application for handling Firebase Cloud Messaging (FCM) notifications using RabbitMQ for event-driven architecture.
 
+## Clone the Repository
+
+```bash
+# Clone the repository
+git clone https://github.com/ryugif/imbee-test-nestjs.git
+
+# Navigate to the project directory
+cd imbee-test-nestjs
+```
+
 ## Prerequisites
 
+- Git
 - Docker & Docker Compose
+- Node.js 22+ (with pnpm package manager, recommended node version: 24+)
+- pnpm (fast, disk space efficient package manager)
 - Firebase Project (for FCM setup)
 
 ## Project Structure
@@ -31,7 +44,15 @@ serviceAccountKey.json         # Firebase service account key (not committed)
 
 ## Quick Start with Docker Compose
 
-### 1. Clone Environment Configuration
+### 1. Install Dependencies
+
+Install project dependencies using pnpm:
+
+```bash
+pnpm install
+```
+
+### 2. Clone Environment Configuration
 
 Copy the example environment file:
 
@@ -61,7 +82,7 @@ RABBITMQ_PASSWORD=guest
 RABBITMQ_VHOST=/
 ```
 
-### 2. Start the Services
+### 3. Start the Services
 
 Build and start all services:
 
@@ -82,7 +103,26 @@ docker compose down
 docker compose down -v
 ```
 
-## Services Overview
+### 3. Access Services
+
+**Application:**
+
+- API: http://localhost:3000
+- Health check: `POST http://localhost:3000`
+
+**RabbitMQ Management UI:**
+
+- URL: http://localhost:15672
+- Username: `guest`
+- Password: `guest`
+
+**MySQL:**
+
+- Host: `localhost`
+- Port: `3306`
+- Database: `imbee_nest_db`
+- Username: `app_user_imbee`
+- Password: `app_password_imbee`
 
 ### MySQL (db)
 
